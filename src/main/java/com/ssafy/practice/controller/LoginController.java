@@ -35,7 +35,7 @@ public class LoginController {
         return "redirect:/login";
     }
 
-    //인증 처리중 예외 발생시 
+    //인증 처리중 예외 발생시
     @GetMapping("/accessDenied")
     public String accessDenied(){
         return "accessDenied";
