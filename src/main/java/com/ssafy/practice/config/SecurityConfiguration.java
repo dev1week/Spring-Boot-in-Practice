@@ -31,33 +31,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        ////Authentication ManagerBuilder를 사용해서 LDAP 인증을 적용
-        auth.ldapAuthentication()
-                //ldif 파일에 추가한 값과 같아야한다. ou는 사용자 계정이 people 조직에 속함을 의미한다.
-                .userDnPatterns("uid={0},ou=people")
-                .contextSource()
-                //인증시 시큐리티가 호출하는 LDAP 서버를 url과 함께 지정한다.
-                .url("ldap://localhost:8389/dc=manning,dc=com")
-                .and()
-                //비밀번호 확인작업 등록 ldap 인증에서는 비밀번호를 ldap 서버에 제공하고 ldap 서버가 판단한다.
-                .passwordCompare()
-                //암호화에 사용할 인코더 등록
-                .passwordEncoder(NoOpPasswordEncoder.getInstance())
-                //비밀번호로 사용하는 속성명을 지정한다,. userPassword라는 이름으로 ldif 파일에 지정했으므로 맞춰준다. 
-                .passwordAttribute("userPassword");
+        //jdbc 기반 인증 적용
+        auth.jdbcAuthentication().dataSource(dataSource);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //모든 요청이 http 기본요청을 거치도록 설정한다.
         http.authorizeHttpRequests()
-                .antMatchers("/login").permitAll()
-                //delete 엔드포인트를 admin 권한을 가진 유저만 사용할 수 있도록 정의
-                .antMatchers("/delete/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
                 .and()
-                .formLogin().loginPage("/login")
+                .httpBasic()
                 .and()
-                //예외 상황이 발생할 경우 다음 Exception을 던진다.
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
     }
 
