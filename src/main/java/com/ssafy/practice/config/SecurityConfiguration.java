@@ -27,10 +27,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return NoOpPasswordEncoder.getInstance();
     }
 
+
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //주입 받은 데이터 소스를 사용해서 jdbc 인증을 수행하도록 AuthenticaionManager를 설정한다.
-        auth.jdbcAuthentication().dataSource(dataSource);
+        ////Authentication ManagerBuilder를 사용해서 LDAP 인증을 적용
+        auth.ldapAuthentication()
+                //ldif 파일에 추가한 값과 같아야한다. ou는 사용자 계정이 people 조직에 속함을 의미한다.
+                .userDnPatterns("uid={0},ou=people")
+                .contextSource()
+                //인증시 시큐리티가 호출하는 LDAP 서버를 url과 함께 지정한다.
+                .url("ldap://localhost:8389/dc=manning,dc=com")
+                .and()
+                //비밀번호 확인작업 등록 ldap 인증에서는 비밀번호를 ldap 서버에 제공하고 ldap 서버가 판단한다.
+                .passwordCompare()
+                //암호화에 사용할 인코더 등록
+                .passwordEncoder(NoOpPasswordEncoder.getInstance())
+                //비밀번호로 사용하는 속성명을 지정한다,. userPassword라는 이름으로 ldif 파일에 지정했으므로 맞춰준다. 
+                .passwordAttribute("userPassword");
     }
 
     @Override
