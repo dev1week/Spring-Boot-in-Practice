@@ -2,6 +2,7 @@ package com.ssafy.practice.handler;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -22,6 +23,12 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         //인증 예외가 disabled일 때만 해당 url 타고 이동
         if(exception instanceof DisabledException){
             defaultRedirectStrategy.sendRedirect(request, response, "/login-disabled");
+            return;
+        }
+
+        //locked 예외
+        if(exception.getCause() instanceof LockedException){
+            defaultRedirectStrategy.sendRedirect(request, response, "/login-locked");
             return;
         }
 

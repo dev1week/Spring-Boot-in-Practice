@@ -26,7 +26,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         //모든 요청이 http 기본요청을 거치도록 설정한다.
         http.authorizeHttpRequests()
                 .antMatchers("/adduser", "/login", "/login-error"
-                ,"login-verified", "/login-disabled", "/verify/email").permitAll()
+                ,"login-verified", "/login-disabled", "/verify/email", "/login-locked").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

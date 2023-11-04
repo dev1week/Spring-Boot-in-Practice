@@ -61,5 +61,11 @@ public class LoginController {
         return "login";
     }
 
+    @GetMapping("/login-locked")
+    public String loginLocked(Model model){
+        model.addAttribute("loginLocked", true);
+        return "login";
+    }
+
 
 }
