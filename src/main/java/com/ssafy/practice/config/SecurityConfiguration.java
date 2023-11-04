@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -18,31 +19,26 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final DataSource dataSource;
-
     private final AccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
 
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //jdbc 기반 인증 적용
-        auth.jdbcAuthentication().dataSource(dataSource);
-    }
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         //모든 요청이 http 기본요청을 거치도록 설정한다.
         http.authorizeHttpRequests()
+                .antMatchers("/adduser", "/login", "/login-error").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
-                .httpBasic()
+                .formLogin().loginPage("/login").failureUrl("/login-error")
                 .and()
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
     }
