@@ -6,4 +6,5 @@ import com.ssafy.practice.model.ApplicationUser;
 public interface UserService {
     ApplicationUser createUser(UserDto userDto);
     ApplicationUser findByUsername(String username);
+    ApplicationUser save(ApplicationUser applicationUser);
 }
