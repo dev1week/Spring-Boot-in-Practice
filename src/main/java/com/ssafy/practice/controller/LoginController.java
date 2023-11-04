@@ -49,4 +49,17 @@ public class LoginController {
     }
 
 
+    @GetMapping("/login-verified")
+    public String loginVerified(Model model) {
+        model.addAttribute("loginVerified", true);
+        return "login";
+    }
+
+    @GetMapping("/login-disabled")
+    public String loginDisabled(Model model) {
+        model.addAttribute("loginDisabled", true);
+        return "login";
+    }
+
+
 }
